@@ -1,0 +1,5 @@
+n = int(input())
+a, b = map(int, input().split())
+v = list(map(int, input().split()))
+x = float(input())
+word = input().strip()

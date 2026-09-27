@@ -1,0 +1,37 @@
+name: Compile PDFs & Release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  render-paper:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+          show-progress: false
+      - uses: typst-community/setup-typst@v5
+      - name: Compiling
+        run: ./scripts/compile-typst.sh all
+      - name: Update Tag
+        run: |
+          git tag -f latest
+          git push origin latest --force
+      - name: Generate Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: |
+            main.pdf
+            main-dark.pdf
+            README.md
+          tag: "latest"
+          name: "Dossier Python"
+          body: "Download the latest compiled PDFs. Last update: ${{ github.event.head_commit.message }}"
+          allowUpdates: true
+          makeLatest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
